@@ -8,7 +8,8 @@ export class AuthController {
     static async register(req, res, next) {
         try {
             const { username, email, password } = req.body;
-            const existingUser = await User.findOne({ email });
+            const cleanEmail = email.trim().toLowerCase();
+            const existingUser = await User.findOne({ email: cleanEmail });
             if (existingUser) {
                 sendError(res, 'Email already registered', 400);
                 return;
@@ -42,7 +43,8 @@ export class AuthController {
     static async login(req, res, next) {
         try {
             const { email, password } = req.body;
-            const user = await User.findOne({ email });
+            const cleanEmail = email.trim().toLowerCase();
+            const user = await User.findOne({ email: cleanEmail });
             if (!user) {
                 sendError(res, 'Invalid credentials', 401);
                 return;
@@ -99,7 +101,12 @@ export class AuthController {
     static async forgotPassword(req, res, next) {
         try {
             const { username, email, newPassword } = req.body;
-            const user = await User.findOne({ username, email });
+            const cleanEmail = email.trim().toLowerCase();
+            const cleanUsername = username.trim();
+            const user = await User.findOne({
+                email: cleanEmail,
+                username: { $regex: new RegExp(`^${cleanUsername}$`, 'i') }
+            });
             if (!user) {
                 sendError(res, 'No matching user found with the provided username and email.', 404);
                 return;

@@ -3,7 +3,11 @@ export const validateBody = (rules) => {
     return (req, res, next) => {
         const errors = [];
         for (const rule of rules) {
-            const val = req.body[rule.field];
+            let val = req.body[rule.field];
+            if (typeof val === 'string') {
+                val = val.trim();
+                req.body[rule.field] = val;
+            }
             // Check required
             if (rule.required && (val === undefined || val === null || val === '')) {
                 errors.push(`${rule.field} is required`);
