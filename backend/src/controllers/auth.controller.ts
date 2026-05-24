@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { User } from '../models/User.js';
 import { generateToken } from '../utils/jwt.js';
 import { sendSuccess, sendError } from '../utils/response.js';
+import { logger } from '../config/logger.js';
 import type { AuthenticatedRequest } from '../types/index.js';
 
 export class AuthController {
@@ -13,14 +14,19 @@ export class AuthController {
       const { username, email, password } = req.body;
       const cleanEmail = email.trim().toLowerCase();
 
+      logger.info(`Processing registration request for username: "${username}", email: "${cleanEmail}"`);
+
       const existingUser = await User.findOne({ email: cleanEmail });
       if (existingUser) {
+        logger.warn(`Registration failed: Email "${cleanEmail}" is already registered`);
         sendError(res, 'Email already registered', 400);
         return;
       }
 
       const user = new User({ username, email, password });
       await user.save();
+
+      logger.success(`User "${username}" registered successfully with ID: ${user._id}`);
 
       const token = generateToken({
         id: user._id.toString(),
@@ -39,7 +45,8 @@ export class AuthController {
           theme: user.theme
         }
       }, 201);
-    } catch (error) {
+    } catch (error: any) {
+      logger.error('Registration error occurred:', error);
       next(error);
     }
   }
@@ -52,17 +59,23 @@ export class AuthController {
       const { email, password } = req.body;
       const cleanEmail = email.trim().toLowerCase();
 
+      logger.info(`Processing login request for email: "${cleanEmail}"`);
+
       const user = await User.findOne({ email: cleanEmail });
       if (!user) {
+        logger.warn(`Login failed: No user found with email "${cleanEmail}"`);
         sendError(res, 'Invalid credentials', 401);
         return;
       }
 
       const isMatch = await user.comparePassword(password);
       if (!isMatch) {
+        logger.warn(`Login failed: Password mismatch for email "${cleanEmail}"`);
         sendError(res, 'Invalid credentials', 401);
         return;
       }
+
+      logger.success(`User logged in successfully: "${user.username}" (${cleanEmail})`);
 
       const token = generateToken({
         id: user._id.toString(),
@@ -81,7 +94,8 @@ export class AuthController {
           theme: user.theme
         }
       });
-    } catch (error) {
+    } catch (error: any) {
+      logger.error('Login error occurred:', error);
       next(error);
     }
   }
@@ -117,11 +131,14 @@ export class AuthController {
       const cleanEmail = email.trim().toLowerCase();
       const cleanUsername = username.trim();
 
+      logger.info(`Processing forgotPassword password reset request for username: "${cleanUsername}", email: "${cleanEmail}"`);
+
       const user = await User.findOne({
         email: cleanEmail,
         username: { $regex: new RegExp(`^${cleanUsername}$`, 'i') }
       });
       if (!user) {
+        logger.warn(`Password reset failed: No user matches username "${cleanUsername}" and email "${cleanEmail}"`);
         sendError(res, 'No matching user found with the provided username and email.', 404);
         return;
       }
@@ -129,8 +146,11 @@ export class AuthController {
       user.password = newPassword;
       await user.save();
 
+      logger.success(`Password reset successful for user "${user.username}" (${cleanEmail})`);
+
       sendSuccess(res, 'Password reset successful. You can now log in.');
-    } catch (error) {
+    } catch (error: any) {
+      logger.error('Password reset error occurred:', error);
       next(error);
     }
   }
