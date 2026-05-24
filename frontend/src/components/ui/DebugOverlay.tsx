@@ -31,24 +31,59 @@ export const DebugOverlay: React.FC = () => {
       setLogs(currentLogs);
     });
 
-    // Intercept console messages
+    // Intercept console messages with recursion guards to prevent infinite rendering loops
     const originalLog = console.log;
     const originalError = console.error;
     const originalWarn = console.warn;
 
+    let isLogging = false;
+
     console.log = (...args) => {
-      addLog('info', args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
       originalLog.apply(console, args);
+      if (isLogging) return;
+      isLogging = true;
+      try {
+        addLog('info', args.map(a => {
+          try {
+            return typeof a === 'object' ? JSON.stringify(a) : String(a);
+          } catch (e) {
+            return '[Unserializable Object]';
+          }
+        }).join(' '));
+      } catch (err) {}
+      isLogging = false;
     };
 
     console.error = (...args) => {
-      addLog('error', args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
       originalError.apply(console, args);
+      if (isLogging) return;
+      isLogging = true;
+      try {
+        addLog('error', args.map(a => {
+          try {
+            return typeof a === 'object' ? JSON.stringify(a) : String(a);
+          } catch (e) {
+            return '[Unserializable Object]';
+          }
+        }).join(' '));
+      } catch (err) {}
+      isLogging = false;
     };
 
     console.warn = (...args) => {
-      addLog('warn', args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
       originalWarn.apply(console, args);
+      if (isLogging) return;
+      isLogging = true;
+      try {
+        addLog('warn', args.map(a => {
+          try {
+            return typeof a === 'object' ? JSON.stringify(a) : String(a);
+          } catch (e) {
+            return '[Unserializable Object]';
+          }
+        }).join(' '));
+      } catch (err) {}
+      isLogging = false;
     };
 
     // Global script error listener
