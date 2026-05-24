@@ -12,20 +12,23 @@ export const DebugOverlay: React.FC = () => {
   const [tokenVal, setTokenVal] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check storage support
-    try {
-      localStorage.setItem('__test_key__', 'test');
-      localStorage.removeItem('__test_key__');
-      setLocalStorageOk(true);
-    } catch (e) {
-      setLocalStorageOk(false);
+    // Check storage support and token state dynamically when drawer is open
+    if (isOpen) {
+      try {
+        localStorage.setItem('__test_key__', 'test');
+        localStorage.removeItem('__test_key__');
+        setLocalStorageOk(true);
+      } catch (e) {
+        setLocalStorageOk(false);
+      }
+
+      const t = safeStorage.getItem('budget_planner_token');
+      setTokenPresent(!!t);
+      setTokenVal(t ? t.substring(0, 15) + '...' : null);
     }
+  }, [isOpen]);
 
-    // Check token state
-    const t = safeStorage.getItem('budget_planner_token');
-    setTokenPresent(!!t);
-    setTokenVal(t ? t.substring(0, 15) + '...' : null);
-
+  useEffect(() => {
     // Subscribe to debug logs
     const unsubscribe = subscribeLogs((currentLogs) => {
       setLogs(currentLogs);
