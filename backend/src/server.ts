@@ -6,7 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import app from './app.js';
-import { connectDB } from './config/db.js';
+import { connectDB, disconnectDB } from './config/db.js';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 
@@ -125,7 +125,7 @@ const handleShutdown = async (signal: string) => {
     activeServer.close(async () => {
       logger.info('HTTP server closed.');
       try {
-        await mongoose.connection.close();
+        await disconnectDB();
         logger.info('MongoDB connection closed.');
         process.exit(0);
       } catch (dbErr: any) {
@@ -141,7 +141,7 @@ const handleShutdown = async (signal: string) => {
     }, 10000);
   } else {
     try {
-      await mongoose.connection.close();
+      await disconnectDB();
       logger.info('MongoDB connection closed.');
       process.exit(0);
     } catch (dbErr: any) {

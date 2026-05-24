@@ -1,10 +1,9 @@
-import mongoose from 'mongoose';
 import { exec } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import app from './app.js';
-import { connectDB } from './config/db.js';
+import { connectDB, disconnectDB } from './config/db.js';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 let activeServer = null;
@@ -111,7 +110,7 @@ const handleShutdown = async (signal) => {
         activeServer.close(async () => {
             logger.info('HTTP server closed.');
             try {
-                await mongoose.connection.close();
+                await disconnectDB();
                 logger.info('MongoDB connection closed.');
                 process.exit(0);
             }
@@ -128,7 +127,7 @@ const handleShutdown = async (signal) => {
     }
     else {
         try {
-            await mongoose.connection.close();
+            await disconnectDB();
             logger.info('MongoDB connection closed.');
             process.exit(0);
         }
