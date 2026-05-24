@@ -36,13 +36,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const res = await api.post('/auth/login', { email, password });
       const { token, user } = res.data.data;
+      const mappedUser = { ...user, id: user.id || user._id };
 
       localStorage.setItem('budget_planner_token', token);
-      localStorage.setItem('budget_planner_user', JSON.stringify(user));
+      localStorage.setItem('budget_planner_user', JSON.stringify(mappedUser));
 
       set({
         token,
-        user,
+        user: mappedUser,
         isAuthenticated: true,
         isLoading: false,
         error: null,
@@ -60,13 +61,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const res = await api.post('/auth/register', { username, email, password });
       const { token, user } = res.data.data;
+      const mappedUser = { ...user, id: user.id || user._id };
 
       localStorage.setItem('budget_planner_token', token);
-      localStorage.setItem('budget_planner_user', JSON.stringify(user));
+      localStorage.setItem('budget_planner_user', JSON.stringify(mappedUser));
 
       set({
         token,
-        user,
+        user: mappedUser,
         isAuthenticated: true,
         isLoading: false,
         error: null,
@@ -101,8 +103,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const res = await api.get('/auth/me');
       const { user } = res.data.data;
-      localStorage.setItem('budget_planner_user', JSON.stringify(user));
-      set({ user, isAuthenticated: true, isLoading: false });
+      const mappedUser = { ...user, id: user.id || user._id };
+      localStorage.setItem('budget_planner_user', JSON.stringify(mappedUser));
+      set({ user: mappedUser, isAuthenticated: true, isLoading: false });
     } catch (err) {
       // Interceptor will handle clean up on 401, but we fallback here
       localStorage.removeItem('budget_planner_token');
@@ -118,8 +121,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const res = await api.put('/users/profile', preferences);
       const { user } = res.data.data;
-      localStorage.setItem('budget_planner_user', JSON.stringify(user));
-      set({ user, isLoading: false, error: null });
+      const mappedUser = { ...user, id: user.id || user._id };
+      localStorage.setItem('budget_planner_user', JSON.stringify(mappedUser));
+      set({ user: mappedUser, isLoading: false, error: null });
       return true;
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Failed to update preferences';

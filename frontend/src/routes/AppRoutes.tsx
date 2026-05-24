@@ -27,7 +27,7 @@ const ProtectedRoute: React.FC = () => {
     verify();
   }, [checkAuth]);
 
-  if (isLoading && !checked) {
+  if (isLoading && !checked && !isAuthenticated) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-gray-50 dark:bg-darkbg">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
