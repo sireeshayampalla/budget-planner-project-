@@ -4,6 +4,7 @@ import { useAuthStore } from '../store/authStore';
 import { Navbar } from '../components/layout/Navbar';
 import { Sidebar } from '../components/layout/Sidebar';
 import { addLog } from '../utils/debugLogger';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 // Pages
 import { Dashboard } from '../pages/Dashboard';
@@ -38,7 +39,9 @@ const DashboardLayout: React.FC = () => {
       <div className="flex flex-1">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <main className="flex-1 px-4 py-8 sm:px-6 md:px-8 max-w-7xl mx-auto w-full overflow-x-hidden">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
     </div>
