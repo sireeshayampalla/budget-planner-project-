@@ -16,6 +16,9 @@ api.interceptors.request.use(
     addLog('info', `API Request: ${config.method?.toUpperCase()} ${config.url} (Token present: ${!!token})`);
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+      if (typeof config.headers.set === 'function') {
+        config.headers.set('Authorization', `Bearer ${token}`);
+      }
     }
     return config;
   },

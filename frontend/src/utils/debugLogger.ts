@@ -1,3 +1,5 @@
+import { safeStorage } from './safeStorage';
+
 type LogType = 'info' | 'error' | 'success' | 'warn';
 
 export interface LogEntry {
@@ -7,7 +9,17 @@ export interface LogEntry {
 }
 
 const listeners = new Set<(logs: LogEntry[]) => void>();
-let logs: LogEntry[] = [];
+
+const getPersistedLogs = (): LogEntry[] => {
+  try {
+    const data = safeStorage.getItem('budget_planner_debug_logs');
+    return data ? JSON.parse(data) : [];
+  } catch (e) {
+    return [];
+  }
+};
+
+let logs: LogEntry[] = getPersistedLogs();
 
 // Load initial log if any
 const getTimestamp = () => {
@@ -22,6 +34,9 @@ export const addLog = (type: LogType, message: string) => {
     message: typeof message === 'object' ? JSON.stringify(message) : String(message)
   };
   logs = [entry, ...logs].slice(0, 150); // Keep last 150 logs
+  try {
+    safeStorage.setItem('budget_planner_debug_logs', JSON.stringify(logs));
+  } catch (e) {}
   listeners.forEach(cb => cb(logs));
 };
 
@@ -37,8 +52,13 @@ export const getLogs = () => logs;
 
 export const clearLogs = () => {
   logs = [];
+  try {
+    safeStorage.removeItem('budget_planner_debug_logs');
+  } catch (e) {}
   listeners.forEach(cb => cb(logs));
 };
 
-// Log initial message
-addLog('info', 'Debug logger initialized');
+// Log initial message if logs are empty
+if (logs.length === 0) {
+  addLog('info', 'Debug logger initialized');
+}
