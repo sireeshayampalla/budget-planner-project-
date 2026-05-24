@@ -35,6 +35,7 @@ import {
 } from 'recharts';
 import { formatCurrency } from '../utils/formatCurrency';
 import { safeFormatDate } from '../utils/formatDate';
+import { addLog } from '../utils/debugLogger';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -50,21 +51,25 @@ export const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        addLog('info', 'Dashboard: fetchDashboardData started');
         setLoading(true);
         setError(null);
         
-        // Fetch dashboard stats and insights in parallel
+        addLog('info', 'Dashboard: Fetching /insights/dashboard and /insights in parallel...');
         const [statsRes, insightsRes] = await Promise.all([
           api.get('/insights/dashboard'),
           api.get('/insights')
         ]);
 
+        addLog('success', `Dashboard: API requests succeeded. stats status: ${statsRes.status}, insights status: ${insightsRes.status}`);
         setStats(statsRes.data.data);
         setInsights(insightsRes.data.data);
       } catch (err: any) {
+        addLog('error', `Dashboard: API requests failed: ${err.message}`);
         setError(err.response?.data?.message || 'Failed to load dashboard data');
       } finally {
         setLoading(false);
+        addLog('info', 'Dashboard: loading set to false');
       }
     };
     fetchDashboardData();

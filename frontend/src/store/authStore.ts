@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import api from '../api/axios';
 import { safeStorage } from '../utils/safeStorage';
+import { addLog } from '../utils/debugLogger';
 
 interface User {
   id: string;
@@ -98,21 +99,27 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   checkAuth: async () => {
+    addLog('info', 'checkAuth: Starting auth check...');
     const token = safeStorage.getItem('budget_planner_token');
+    addLog('info', `checkAuth: Token retrieved from storage: ${token ? 'present' : 'missing'}`);
     if (!token) {
+      addLog('info', 'checkAuth: No token found. Setting isInitialized: true');
       set({ user: null, token: null, isAuthenticated: false, isLoading: false, isInitialized: true });
       return;
     }
 
     set({ isLoading: true });
     try {
+      addLog('info', 'checkAuth: Fetching /auth/me...');
       const res = await api.get('/auth/me');
+      addLog('success', `checkAuth: /auth/me success. Status: ${res.status}`);
       const { user } = res.data.data;
       const mappedUser = { ...user, id: user.id || user._id };
       safeStorage.setItem('budget_planner_user', JSON.stringify(mappedUser));
+      addLog('info', `checkAuth: Saved user to storage: ${mappedUser.username}`);
       set({ user: mappedUser, isAuthenticated: true, isLoading: false, isInitialized: true });
-    } catch (err) {
-      // Interceptor will handle clean up on 401, but we fallback here
+    } catch (err: any) {
+      addLog('error', `checkAuth: /auth/me request failed: ${err.message}`);
       safeStorage.removeItem('budget_planner_token');
       safeStorage.removeItem('budget_planner_user');
       set({ user: null, token: null, isAuthenticated: false, isLoading: false, isInitialized: true });
