@@ -53,7 +53,7 @@ const DashboardLayout: React.FC = () => {
       <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
       <div className="flex flex-1">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <main className="flex-1 px-4 py-8 sm:px-6 md:px-8 max-w-7xl mx-auto w-full overflow-hidden">
+        <main className="flex-1 px-4 py-8 sm:px-6 md:px-8 max-w-7xl mx-auto w-full overflow-x-hidden">
           <Outlet />
         </main>
       </div>
