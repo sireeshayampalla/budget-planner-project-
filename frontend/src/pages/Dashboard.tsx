@@ -92,13 +92,26 @@ export const Dashboard: React.FC = () => {
     );
   }
 
-  const {
-    monthly = { income: 0, expenses: 0, balance: 0, budget: 0, remainingBudget: 0 },
-    allTime = { income: 0, expenses: 0, balance: 0 },
-    categoryDistribution = [],
-    monthlyTrends = [],
-    recentTransactions = []
-  } = stats || {};
+  const rawMonthly = stats?.monthly;
+  const rawAllTime = stats?.allTime;
+  
+  const monthly = {
+    income: rawMonthly?.income ?? 0,
+    expenses: rawMonthly?.expenses ?? 0,
+    balance: rawMonthly?.balance ?? 0,
+    budget: rawMonthly?.budget ?? 0,
+    remainingBudget: rawMonthly?.remainingBudget ?? 0
+  };
+  
+  const allTime = {
+    income: rawAllTime?.income ?? 0,
+    expenses: rawAllTime?.expenses ?? 0,
+    balance: rawAllTime?.balance ?? 0
+  };
+
+  const categoryDistribution = Array.isArray(stats?.categoryDistribution) ? stats.categoryDistribution : [];
+  const monthlyTrends = Array.isArray(stats?.monthlyTrends) ? stats.monthlyTrends : [];
+  const recentTransactions = Array.isArray(stats?.recentTransactions) ? stats.recentTransactions : [];
 
   const spendingScore = insights?.spendingScore ?? 100;
   const insightsList = insights?.insightsList || [];
