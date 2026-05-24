@@ -60,7 +60,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <NavLink
                 key={item.to}
                 to={item.to}
-                onClick={onClose}
+                onClick={() => {
+                  setTimeout(() => {
+                    onClose();
+                  }, 80);
+                }}
                 className={({ isActive }: { isActive: boolean }) => `
                   flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all duration-200
                   ${isActive

@@ -32,6 +32,11 @@ const PublicRoute: React.FC = () => {
 // Main Layout Wrapper
 const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
 
   const handleToggle = () => {
     addLog('info', `DashboardLayout: Toggling sidebar from ${sidebarOpen} to ${!sidebarOpen}`);
