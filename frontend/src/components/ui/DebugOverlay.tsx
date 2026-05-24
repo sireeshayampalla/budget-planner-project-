@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { addLog, subscribeLogs, clearLogs } from '../../utils/debugLogger';
 import type { LogEntry } from '../../utils/debugLogger';
 import api from '../../api/axios';
@@ -9,7 +9,6 @@ export const DebugOverlay: React.FC = () => {
   const [localStorageOk, setLocalStorageOk] = useState(false);
   const [tokenPresent, setTokenPresent] = useState(false);
   const [tokenVal, setTokenVal] = useState<string | null>(null);
-  const logEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Check storage support
@@ -285,11 +284,8 @@ export const DebugOverlay: React.FC = () => {
               overflowY: 'auto',
               padding: '10px 14px',
               backgroundColor: '#090d16',
-              display: 'flex',
-              flexDirection: 'column-reverse',
             }}
           >
-            <div ref={logEndRef} />
             {logs.map((log, idx) => {
               let color = '#f8fafc'; // info
               if (log.type === 'error') color = '#f43f5e';
