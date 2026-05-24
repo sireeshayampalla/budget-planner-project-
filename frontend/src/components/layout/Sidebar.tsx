@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, CreditCard, TrendingUp, Sparkles, X, Target, User } from 'lucide-react';
-
+import { addLog } from '../../utils/debugLogger';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -9,6 +9,10 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  useEffect(() => {
+    addLog('info', `Sidebar: isOpen state changed to ${isOpen}`);
+  }, [isOpen]);
+
   const navItems = [
     { name: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
     { name: 'Expenses', to: '/expenses', icon: CreditCard },

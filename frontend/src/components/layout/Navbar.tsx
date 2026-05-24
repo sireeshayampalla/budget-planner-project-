@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { safeStorage } from '../../utils/safeStorage';
+import { addLog } from '../../utils/debugLogger';
 
 interface NavbarProps {
   onToggleSidebar: () => void;
@@ -74,7 +75,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
         {/* Left Section: Menu Toggle (Mobile) & Title */}
         <div className="flex items-center gap-3">
           <button
-            onClick={onToggleSidebar}
+            onClick={() => {
+              addLog('info', 'Navbar: Hamburger menu button clicked');
+              onToggleSidebar();
+            }}
             className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none md:hidden dark:text-gray-400 dark:hover:bg-darkborder dark:hover:text-white"
           >
             <Menu className="h-5.5 w-5.5" />

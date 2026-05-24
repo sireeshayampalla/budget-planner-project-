@@ -33,11 +33,21 @@ const PublicRoute: React.FC = () => {
 const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const handleToggle = () => {
+    addLog('info', `DashboardLayout: Toggling sidebar from ${sidebarOpen} to ${!sidebarOpen}`);
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const handleClose = () => {
+    addLog('info', 'DashboardLayout: Closing sidebar');
+    setSidebarOpen(false);
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900 dark:bg-darkbg dark:text-gray-100 transition-colors duration-200">
-      <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      <Navbar onToggleSidebar={handleToggle} />
       <div className="flex flex-1">
-        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <Sidebar isOpen={sidebarOpen} onClose={handleClose} />
         <main className="flex-1 px-4 py-8 sm:px-6 md:px-8 max-w-7xl mx-auto w-full overflow-x-hidden">
           <ErrorBoundary>
             <Outlet />
