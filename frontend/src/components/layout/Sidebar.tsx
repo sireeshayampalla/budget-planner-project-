@@ -42,14 +42,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         <div className="flex h-16 items-center justify-between px-6 border-b border-gray-100 md:hidden dark:border-darkborder">
           <span className="font-semibold text-gray-900 dark:text-white">Navigation</span>
           <button
-            onClick={(e) => {
-              e.preventDefault();
+            onClick={() => {
               addLog('info', 'Sidebar: Close button clicked');
-              onClose();
-            }}
-            onTouchStart={(e) => {
-              e.preventDefault();
-              addLog('info', 'Sidebar: Close button touched (onTouchStart)');
               onClose();
             }}
             className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-darkborder"

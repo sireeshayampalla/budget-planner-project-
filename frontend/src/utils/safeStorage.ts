@@ -37,9 +37,11 @@ export const safeStorage = {
       if (val !== null) return val;
     } catch (e) {}
     
-    // Cookie fallback
-    const cookieVal = getCookie(key);
-    if (cookieVal !== null) return cookieVal;
+    // Cookie fallback: only read token and theme from cookies
+    if (key === 'budget_planner_token' || key === 'budget_planner_theme') {
+      const cookieVal = getCookie(key);
+      if (cookieVal !== null) return cookieVal;
+    }
 
     // Memory fallback
     return memoryStorage[key] || null;
@@ -50,8 +52,10 @@ export const safeStorage = {
       return;
     } catch (e) {}
 
-    // Cookie fallback
-    setCookie(key, value);
+    // Cookie fallback: only write token and theme to cookies to prevent header bloat
+    if (key === 'budget_planner_token' || key === 'budget_planner_theme') {
+      setCookie(key, value);
+    }
 
     // Memory fallback
     memoryStorage[key] = value;
@@ -62,7 +66,9 @@ export const safeStorage = {
     } catch (e) {}
     
     // Cookie fallback
-    removeCookie(key);
+    if (key === 'budget_planner_token' || key === 'budget_planner_theme') {
+      removeCookie(key);
+    }
 
     // Memory fallback
     delete memoryStorage[key];

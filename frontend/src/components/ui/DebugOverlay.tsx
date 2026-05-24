@@ -137,7 +137,10 @@ export const DebugOverlay: React.FC = () => {
     <div style={{ position: 'fixed', bottom: '16px', right: '16px', zIndex: 999999 }}>
       {/* Floating Toggle Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
         style={{
           backgroundColor: '#4f46e5',
           color: 'white',
@@ -161,6 +164,7 @@ export const DebugOverlay: React.FC = () => {
       {/* Logs Drawer */}
       {isOpen && (
         <div
+          onClick={(e) => e.stopPropagation()}
           style={{
             position: 'fixed',
             bottom: '80px',
@@ -193,7 +197,10 @@ export const DebugOverlay: React.FC = () => {
           >
             <span style={{ fontWeight: 'bold', color: '#818cf8' }}>Mobile Diagnostics</span>
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsOpen(false);
+              }}
               style={{
                 backgroundColor: 'transparent',
                 color: '#94a3b8',
@@ -229,49 +236,70 @@ export const DebugOverlay: React.FC = () => {
               padding: '8px 12px',
               borderBottom: '1px solid #475569',
               display: 'flex',
-              gap: '8px',
+              flexWrap: 'wrap',
+              gap: '6px',
               backgroundColor: '#1e293b',
             }}
           >
             <button
-              onClick={handleTestAPI}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleTestAPI();
+              }}
               style={{
-                flex: 1,
-                padding: '6px',
+                flex: '1 1 auto',
+                minWidth: '70px',
+                padding: '6px 8px',
                 backgroundColor: '#10b981',
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer',
                 fontWeight: 'bold',
+                fontSize: '11px',
+                textAlign: 'center',
               }}
             >
-              Test API Link
+              Test API
             </button>
             <button
-              onClick={handleRefreshState}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRefreshState();
+              }}
               style={{
-                padding: '6px 12px',
+                flex: '1 1 auto',
+                minWidth: '90px',
+                padding: '6px 8px',
                 backgroundColor: '#6366f1',
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer',
                 fontWeight: 'bold',
+                fontSize: '11px',
+                textAlign: 'center',
               }}
             >
-              Refresh Token Check
+              Refresh Token
             </button>
             <button
-              onClick={clearLogs}
+              onClick={(e) => {
+                e.stopPropagation();
+                clearLogs();
+              }}
               style={{
-                padding: '6px 12px',
+                flex: '1 1 auto',
+                minWidth: '70px',
+                padding: '6px 8px',
                 backgroundColor: '#ef4444',
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer',
                 fontWeight: 'bold',
+                fontSize: '11px',
+                textAlign: 'center',
               }}
             >
               Clear Logs
