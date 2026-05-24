@@ -10,10 +10,16 @@ import insightRoutes from './routes/insight.routes.js';
 import budgetRoutes from './routes/budget.routes.js';
 import healthRoutes from './routes/health.routes.js';
 import { errorHandler } from './middleware/error.middleware.js';
+import { env } from './config/env.js';
 const app = express();
 // Security Middlewares
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+    origin: env.CLIENT_URL === '*' ? '*' : env.CLIENT_URL.split(','),
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 // Logging Middleware
 app.use(morgan('dev'));
 // Parse JSON Bodies

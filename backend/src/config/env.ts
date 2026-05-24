@@ -12,7 +12,8 @@ export const env = {
   PORT: parseInt(process.env.PORT || '5000', 10),
   MONGO_URI: process.env.MONGO_URI as string,
   JWT_SECRET: process.env.JWT_SECRET || 'super_secret_jwt_key_123_change_me',
-  NODE_ENV: process.env.NODE_ENV || 'development'
+  NODE_ENV: process.env.NODE_ENV || 'development',
+  CLIENT_URL: process.env.CLIENT_URL || '*'
 };
 
 // Validate critical environment configurations
