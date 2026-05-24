@@ -1,28 +1,70 @@
+// Memory fallback dictionary for strict privacy environments
+const memoryStorage: Record<string, string> = {};
+
+// Cookie fallback helpers
+const getCookie = (name: string): string | null => {
+  try {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  } catch (e) {}
+  return null;
+};
+
+const setCookie = (name: string, value: string, days = 7) => {
+  try {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = `; expires=${date.toUTCString()}`;
+    document.cookie = `${name}=${value || ""}${expires}; path=/; SameSite=Lax; Secure`;
+  } catch (e) {}
+};
+
+const removeCookie = (name: string) => {
+  try {
+    document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+  } catch (e) {}
+};
+
 /**
  * Safe local storage wrapper.
- * Prevents throwing SecurityError / DOMException errors in private modes or restricted environments.
+ * Falls back to document cookies and in-memory storage if localStorage is blocked by privacy controls.
  */
 export const safeStorage = {
   getItem: (key: string): string | null => {
     try {
-      return localStorage.getItem(key);
-    } catch (e) {
-      console.warn(`localStorage read failed for key ${key}:`, e);
-      return null;
-    }
+      const val = localStorage.getItem(key);
+      if (val !== null) return val;
+    } catch (e) {}
+    
+    // Cookie fallback
+    const cookieVal = getCookie(key);
+    if (cookieVal !== null) return cookieVal;
+
+    // Memory fallback
+    return memoryStorage[key] || null;
   },
   setItem: (key: string, value: string): void => {
     try {
       localStorage.setItem(key, value);
-    } catch (e) {
-      console.warn(`localStorage write failed for key ${key}:`, e);
-    }
+      return;
+    } catch (e) {}
+
+    // Cookie fallback
+    setCookie(key, value);
+
+    // Memory fallback
+    memoryStorage[key] = value;
   },
   removeItem: (key: string): void => {
     try {
       localStorage.removeItem(key);
-    } catch (e) {
-      console.warn(`localStorage delete failed for key ${key}:`, e);
-    }
+    } catch (e) {}
+    
+    // Cookie fallback
+    removeCookie(key);
+
+    // Memory fallback
+    delete memoryStorage[key];
   }
 };
