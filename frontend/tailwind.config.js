@@ -23,6 +23,11 @@ export default {
       fontFamily: {
         sans: ['Outfit', 'Inter', 'system-ui', 'sans-serif'],
       },
+      spacing: {
+        '3.5': '0.875rem',
+        '4.5': '1.125rem',
+        '5.5': '1.375rem',
+      },
     },
   },
   plugins: [],
