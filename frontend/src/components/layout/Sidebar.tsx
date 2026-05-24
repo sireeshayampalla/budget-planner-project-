@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { LayoutDashboard, CreditCard, TrendingUp, Sparkles, X, Target, User } from 'lucide-react';
 import { addLog } from '../../utils/debugLogger';
 
@@ -9,6 +9,7 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const location = useLocation();
   useEffect(() => {
     addLog('info', `Sidebar: isOpen state changed to ${isOpen}`);
   }, [isOpen]);
@@ -61,9 +62,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 key={item.to}
                 to={item.to}
                 onClick={() => {
-                  setTimeout(() => {
+                  if (location.pathname === item.to) {
                     onClose();
-                  }, 80);
+                  }
                 }}
                 className={({ isActive }: { isActive: boolean }) => `
                   flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all duration-200
