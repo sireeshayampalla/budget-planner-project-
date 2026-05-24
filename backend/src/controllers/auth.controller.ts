@@ -64,14 +64,14 @@ export class AuthController {
       const user = await User.findOne({ email: cleanEmail });
       if (!user) {
         logger.warn(`Login failed: No user found with email "${cleanEmail}"`);
-        sendError(res, 'Invalid credentials', 401);
+        sendError(res, 'User not found. Please register first or check your email address.', 404);
         return;
       }
 
       const isMatch = await user.comparePassword(password);
       if (!isMatch) {
         logger.warn(`Login failed: Password mismatch for email "${cleanEmail}"`);
-        sendError(res, 'Invalid credentials', 401);
+        sendError(res, 'Incorrect password. Please try again.', 401);
         return;
       }
 
