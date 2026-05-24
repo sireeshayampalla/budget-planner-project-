@@ -60,7 +60,7 @@ export const Login: React.FC = () => {
     const success = await login(data.email, data.password);
     if (success) {
       toast.success('Successfully signed in!');
-      navigate('/');
+      navigate('/dashboard');
     }
   };
 

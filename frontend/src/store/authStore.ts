@@ -1,6 +1,31 @@
 import { create } from 'zustand';
 import api from '../api/axios';
 
+const safeStorage = {
+  getItem: (key: string): string | null => {
+    try {
+      return localStorage.getItem(key);
+    } catch (e) {
+      console.warn(`localStorage read failed for key ${key}:`, e);
+      return null;
+    }
+  },
+  setItem: (key: string, value: string): void => {
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {
+      console.warn(`localStorage write failed for key ${key}:`, e);
+    }
+  },
+  removeItem: (key: string): void => {
+    try {
+      localStorage.removeItem(key);
+    } catch (e) {
+      console.warn(`localStorage delete failed for key ${key}:`, e);
+    }
+  }
+};
+
 interface User {
   id: string;
   username: string;
@@ -15,6 +40,7 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isInitialized: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<boolean>;
   register: (username: string, email: string, password: string) => Promise<boolean>;
@@ -25,10 +51,11 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: JSON.parse(localStorage.getItem('budget_planner_user') || 'null'),
-  token: localStorage.getItem('budget_planner_token'),
-  isAuthenticated: !!localStorage.getItem('budget_planner_token'),
+  user: JSON.parse(safeStorage.getItem('budget_planner_user') || 'null'),
+  token: safeStorage.getItem('budget_planner_token'),
+  isAuthenticated: !!safeStorage.getItem('budget_planner_token'),
   isLoading: false,
+  isInitialized: false,
   error: null,
 
   login: async (email, password) => {
@@ -38,14 +65,15 @@ export const useAuthStore = create<AuthState>((set) => ({
       const { token, user } = res.data.data;
       const mappedUser = { ...user, id: user.id || user._id };
 
-      localStorage.setItem('budget_planner_token', token);
-      localStorage.setItem('budget_planner_user', JSON.stringify(mappedUser));
+      safeStorage.setItem('budget_planner_token', token);
+      safeStorage.setItem('budget_planner_user', JSON.stringify(mappedUser));
 
       set({
         token,
         user: mappedUser,
         isAuthenticated: true,
         isLoading: false,
+        isInitialized: true,
         error: null,
       });
       return true;
@@ -63,14 +91,15 @@ export const useAuthStore = create<AuthState>((set) => ({
       const { token, user } = res.data.data;
       const mappedUser = { ...user, id: user.id || user._id };
 
-      localStorage.setItem('budget_planner_token', token);
-      localStorage.setItem('budget_planner_user', JSON.stringify(mappedUser));
+      safeStorage.setItem('budget_planner_token', token);
+      safeStorage.setItem('budget_planner_user', JSON.stringify(mappedUser));
 
       set({
         token,
         user: mappedUser,
         isAuthenticated: true,
         isLoading: false,
+        isInitialized: true,
         error: null,
       });
       return true;
@@ -82,8 +111,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: () => {
-    localStorage.removeItem('budget_planner_token');
-    localStorage.removeItem('budget_planner_user');
+    safeStorage.removeItem('budget_planner_token');
+    safeStorage.removeItem('budget_planner_user');
     set({
       token: null,
       user: null,
@@ -93,9 +122,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   checkAuth: async () => {
-    const token = localStorage.getItem('budget_planner_token');
+    const token = safeStorage.getItem('budget_planner_token');
     if (!token) {
-      set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+      set({ user: null, token: null, isAuthenticated: false, isLoading: false, isInitialized: true });
       return;
     }
 
@@ -104,13 +133,13 @@ export const useAuthStore = create<AuthState>((set) => ({
       const res = await api.get('/auth/me');
       const { user } = res.data.data;
       const mappedUser = { ...user, id: user.id || user._id };
-      localStorage.setItem('budget_planner_user', JSON.stringify(mappedUser));
-      set({ user: mappedUser, isAuthenticated: true, isLoading: false });
+      safeStorage.setItem('budget_planner_user', JSON.stringify(mappedUser));
+      set({ user: mappedUser, isAuthenticated: true, isLoading: false, isInitialized: true });
     } catch (err) {
       // Interceptor will handle clean up on 401, but we fallback here
-      localStorage.removeItem('budget_planner_token');
-      localStorage.removeItem('budget_planner_user');
-      set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+      safeStorage.removeItem('budget_planner_token');
+      safeStorage.removeItem('budget_planner_user');
+      set({ user: null, token: null, isAuthenticated: false, isLoading: false, isInitialized: true });
     }
   },
 
@@ -122,7 +151,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const res = await api.put('/users/profile', preferences);
       const { user } = res.data.data;
       const mappedUser = { ...user, id: user.id || user._id };
-      localStorage.setItem('budget_planner_user', JSON.stringify(mappedUser));
+      safeStorage.setItem('budget_planner_user', JSON.stringify(mappedUser));
       set({ user: mappedUser, isLoading: false, error: null });
       return true;
     } catch (err: any) {

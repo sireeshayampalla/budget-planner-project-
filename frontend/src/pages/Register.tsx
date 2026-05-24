@@ -35,7 +35,7 @@ export const Register: React.FC = () => {
     const success = await registerUser(data.username, data.email, data.password);
     if (success) {
       toast.success('Account created successfully!');
-      navigate('/');
+      navigate('/dashboard');
     }
   };
 

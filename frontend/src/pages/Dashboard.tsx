@@ -92,13 +92,13 @@ export const Dashboard: React.FC = () => {
     );
   }
 
-  const { monthly, allTime, categoryDistribution, monthlyTrends, recentTransactions } = stats || {
-    monthly: { income: 0, expenses: 0, balance: 0, budget: 0, remainingBudget: 0 },
-    allTime: { income: 0, expenses: 0, balance: 0 },
-    categoryDistribution: [],
-    monthlyTrends: [],
-    recentTransactions: []
-  };
+  const {
+    monthly = { income: 0, expenses: 0, balance: 0, budget: 0, remainingBudget: 0 },
+    allTime = { income: 0, expenses: 0, balance: 0 },
+    categoryDistribution = [],
+    monthlyTrends = [],
+    recentTransactions = []
+  } = stats || {};
 
   const spendingScore = insights?.spendingScore ?? 100;
   const insightsList = insights?.insightsList || [];

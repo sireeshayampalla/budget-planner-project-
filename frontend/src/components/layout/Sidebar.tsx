@@ -10,7 +10,7 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const navItems = [
-    { name: 'Dashboard', to: '/', icon: LayoutDashboard },
+    { name: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
     { name: 'Expenses', to: '/expenses', icon: CreditCard },
     { name: 'Income', to: '/income', icon: TrendingUp },
     { name: 'Budgets & Goals', to: '/budgets', icon: Target },

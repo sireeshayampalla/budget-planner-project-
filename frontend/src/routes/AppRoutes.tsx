@@ -16,32 +16,15 @@ import { Profile } from '../pages/Profile';
 
 // Protected Route Wrapper
 const ProtectedRoute: React.FC = () => {
-  const { isAuthenticated, checkAuth, isLoading } = useAuthStore();
-  const [checked, setChecked] = useState(false);
-
-  useEffect(() => {
-    const verify = async () => {
-      await checkAuth();
-      setChecked(true);
-    };
-    verify();
-  }, [checkAuth]);
-
-  if (isLoading && !checked && !isAuthenticated) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center bg-gray-50 dark:bg-darkbg">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
-      </div>
-    );
-  }
-
+  const { isAuthenticated } = useAuthStore();
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 // Public Route Wrapper (prevent logged-in users from seeing Login/Register)
 const PublicRoute: React.FC = () => {
   const { isAuthenticated } = useAuthStore();
-  return !isAuthenticated ? <Outlet /> : <Navigate to="/" replace />;
+  const [initialIsAuthenticated] = useState(isAuthenticated);
+  return !initialIsAuthenticated ? <Outlet /> : <Navigate to="/dashboard" replace />;
 };
 
 // Main Layout Wrapper
@@ -62,6 +45,20 @@ const DashboardLayout: React.FC = () => {
 };
 
 export const AppRoutes: React.FC = () => {
+  const { checkAuth, isInitialized } = useAuthStore();
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  if (!isInitialized) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-gray-50 dark:bg-darkbg">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
+      </div>
+    );
+  }
+
   return (
     <Routes>
       {/* Public Auth Routes */}
@@ -73,7 +70,8 @@ export const AppRoutes: React.FC = () => {
       {/* Protected App Routes */}
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/expenses" element={<Expenses />} />
           <Route path="/income" element={<Income />} />
           <Route path="/budgets" element={<Budgets />} />
@@ -83,7 +81,7 @@ export const AppRoutes: React.FC = () => {
       </Route>
 
       {/* Fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 };
