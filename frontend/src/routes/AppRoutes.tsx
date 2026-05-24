@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { Navbar } from '../components/layout/Navbar';
 import { Sidebar } from '../components/layout/Sidebar';
+import { addLog } from '../utils/debugLogger';
 
 // Pages
 import { Dashboard } from '../pages/Dashboard';
@@ -47,9 +48,15 @@ const DashboardLayout: React.FC = () => {
 export const AppRoutes: React.FC = () => {
   const { checkAuth, isInitialized } = useAuthStore();
 
+  const location = useLocation();
+
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  useEffect(() => {
+    addLog('info', `Route transition: ${location.pathname}${location.search}`);
+  }, [location]);
 
   if (!isInitialized) {
     return (
