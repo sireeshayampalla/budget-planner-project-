@@ -389,7 +389,7 @@ export const Dashboard: React.FC = () => {
                 className="h-full w-full"
               >
                 {monthlyTrends.length > 0 ? (
-                  <ResponsiveContainer width="99%" height="100%">
+                  <ResponsiveContainer width="99%" height={300}>
                     <BarChart data={monthlyTrends} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" className="dark:stroke-darkborder" />
                       <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="#9ca3af" tickLine={false} />
@@ -430,7 +430,7 @@ export const Dashboard: React.FC = () => {
                 {formattedCategoryData.length > 0 ? (
                   <>
                     <div className="h-60 w-full md:w-1/2">
-                      <ResponsiveContainer width="99%" height="100%">
+                      <ResponsiveContainer width="99%" height={240}>
                         <PieChart>
                           <Pie
                             data={formattedCategoryData}
@@ -487,7 +487,7 @@ export const Dashboard: React.FC = () => {
                 className="h-full w-full"
               >
                 {monthlyTrends.length > 0 ? (
-                  <ResponsiveContainer width="99%" height="100%">
+                  <ResponsiveContainer width="99%" height={300}>
                     <LineChart data={monthlyTrends} margin={{ top: 10, right: 15, left: -20, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" className="dark:stroke-darkborder" />
                       <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="#9ca3af" tickLine={false} />
