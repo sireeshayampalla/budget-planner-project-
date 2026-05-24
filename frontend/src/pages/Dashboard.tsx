@@ -34,6 +34,7 @@ import {
   Line
 } from 'recharts';
 import { formatCurrency } from '../utils/formatCurrency';
+import { safeFormatDate } from '../utils/formatDate';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -124,7 +125,14 @@ export const Dashboard: React.FC = () => {
     value: item.value
   }));
 
-  const currentMonthName = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
+  const currentMonthName = (() => {
+    const MONTH_NAMES = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    const now = new Date();
+    return `${MONTH_NAMES[now.getMonth()]} ${now.getFullYear()}`;
+  })();
 
   // Gauge details
   const radius = 50;
@@ -579,11 +587,7 @@ export const Dashboard: React.FC = () => {
                     </td>
                     {/* Date */}
                     <td className="py-3.5 text-gray-500 dark:text-gray-400">
-                      {new Date(tx.date).toLocaleDateString(undefined, {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                      })}
+                      {safeFormatDate(tx.date)}
                     </td>
                     {/* Amount */}
                     <td className={`py-3.5 text-right pr-2 font-bold

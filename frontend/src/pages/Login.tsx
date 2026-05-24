@@ -8,6 +8,7 @@ import { Card } from '../components/ui/Card';
 import { Mail, Lock, AlertCircle, Eye, EyeOff, Sparkles, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import api from '../api/axios';
+import { safeStorage } from '../utils/safeStorage';
 
 export const Login: React.FC = () => {
   const { login, error, isLoading, clearError } = useAuthStore();
@@ -27,7 +28,7 @@ export const Login: React.FC = () => {
 
   // Read remember me on mount
   useEffect(() => {
-    const savedEmail = localStorage.getItem('budget_planner_remember_email');
+    const savedEmail = safeStorage.getItem('budget_planner_remember_email');
     if (savedEmail) {
       setValue('email', savedEmail);
       setRememberMe(true);
@@ -52,9 +53,9 @@ export const Login: React.FC = () => {
 
   const onSubmit = async (data: any) => {
     if (rememberMe) {
-      localStorage.setItem('budget_planner_remember_email', data.email);
+      safeStorage.setItem('budget_planner_remember_email', data.email);
     } else {
-      localStorage.removeItem('budget_planner_remember_email');
+      safeStorage.removeItem('budget_planner_remember_email');
     }
 
     const success = await login(data.email, data.password);

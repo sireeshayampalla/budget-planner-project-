@@ -109,14 +109,12 @@ export const Insights: React.FC = () => {
     );
   }
 
-  const {
-    spendingScore = 100,
-    totalIncome = 0,
-    totalExpenses = 0,
-    highestSpendingCategory = 'None',
-    insightsList = [],
-    savingsSuggestions = []
-  } = insightData || {};
+  const spendingScore = insightData?.spendingScore ?? 100;
+  const totalIncome = insightData?.totalIncome ?? 0;
+  const totalExpenses = insightData?.totalExpenses ?? 0;
+  const highestSpendingCategory = insightData?.highestSpendingCategory || 'None';
+  const insightsList = Array.isArray(insightData?.insightsList) ? insightData.insightsList : [];
+  const savingsSuggestions = Array.isArray(insightData?.savingsSuggestions) ? insightData.savingsSuggestions : [];
 
   const scoreDetails = getScoreStatus(spendingScore);
   const savingsRate = totalIncome > 0 ? Math.max(0, Math.round(((totalIncome - totalExpenses) / totalIncome) * 100)) : 0;

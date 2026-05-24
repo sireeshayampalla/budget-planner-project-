@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { addLog, subscribeLogs, clearLogs } from '../../utils/debugLogger';
 import type { LogEntry } from '../../utils/debugLogger';
 import api from '../../api/axios';
+import { safeStorage } from '../../utils/safeStorage';
 
 export const DebugOverlay: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,7 +22,7 @@ export const DebugOverlay: React.FC = () => {
     }
 
     // Check token state
-    const t = localStorage.getItem('budget_planner_token');
+    const t = safeStorage.getItem('budget_planner_token');
     setTokenPresent(!!t);
     setTokenVal(t ? t.substring(0, 15) + '...' : null);
 
@@ -123,7 +124,7 @@ export const DebugOverlay: React.FC = () => {
 
   const handleRefreshState = () => {
     try {
-      const t = localStorage.getItem('budget_planner_token');
+      const t = safeStorage.getItem('budget_planner_token');
       setTokenPresent(!!t);
       setTokenVal(t ? t.substring(0, 15) + '...' : null);
       addLog('info', `Refreshed token status. Present: ${!!t}`);
@@ -172,7 +173,7 @@ export const DebugOverlay: React.FC = () => {
             borderRadius: '12px',
             boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
             display: 'flex',
-            flexDirection: 'col' as any,
+            flexDirection: 'column',
             overflow: 'hidden',
             border: '1px solid #475569',
             fontFamily: 'monospace',

@@ -21,6 +21,7 @@ import {
   X
 } from 'lucide-react';
 import { formatCurrency } from '../utils/formatCurrency';
+import { safeStorage } from '../utils/safeStorage';
 
 const CATEGORIES = [
   'Food',
@@ -58,7 +59,7 @@ export const Budgets: React.FC = () => {
   // Savings Target state (locally persisted in localStorage per user)
   const savingsTargetKey = `budget_planner_savings_target_${user?.id || 'guest'}`;
   const [savingsTarget, setSavingsTarget] = useState<number>(() => {
-    return parseFloat(localStorage.getItem(savingsTargetKey) || '500');
+    return parseFloat(safeStorage.getItem(savingsTargetKey) || '500');
   });
   const [isEditingSavings, setIsEditingSavings] = useState(false);
   const [tempSavings, setTempSavings] = useState<string>(savingsTarget.toString());
@@ -104,7 +105,7 @@ export const Budgets: React.FC = () => {
       return;
     }
     setSavingsTarget(val);
-    localStorage.setItem(savingsTargetKey, val.toString());
+    safeStorage.setItem(savingsTargetKey, val.toString());
     setIsEditingSavings(false);
     toast.success('Savings target updated!');
   };
@@ -632,7 +633,10 @@ export const Budgets: React.FC = () => {
               />
 
               <div className="text-xs text-gray-450 dark:text-gray-400 bg-gray-50 dark:bg-darkbg/50 p-2.5 rounded-lg border border-gray-150 dark:border-darkborder/50">
-                This limit applies to the selected period: <span className="font-semibold text-gray-700 dark:text-gray-200">{new Date(selectedYear, selectedMonth - 1).toLocaleString('default', { month: 'long', year: 'numeric' })}</span>.
+                This limit applies to the selected period: <span className="font-semibold text-gray-700 dark:text-gray-200">{`${[
+                  'January', 'February', 'March', 'April', 'May', 'June',
+                  'July', 'August', 'September', 'October', 'November', 'December'
+                ][selectedMonth - 1]} ${selectedYear}`}</span>.
               </div>
 
               <div className="flex justify-end gap-2.5 pt-2">

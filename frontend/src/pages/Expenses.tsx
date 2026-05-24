@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { formatCurrency } from '../utils/formatCurrency';
+import { safeFormatDate } from '../utils/formatDate';
 
 const CATEGORIES = [
   'Food',
@@ -131,7 +132,20 @@ export const Expenses: React.FC = () => {
     setValue('amount', expense.amount.toString());
     setValue('category', expense.category);
     setValue('description', expense.description || '');
-    setValue('date', new Date(expense.date).toISOString().split('T')[0]);
+    let formattedDate = '';
+    try {
+      const d = new Date(expense.date);
+      if (!isNaN(d.getTime())) {
+        formattedDate = d.toISOString().split('T')[0];
+      } else {
+        const cleanDate = String(expense.date).replace(/-/g, '/').replace('T', ' ').split('.')[0];
+        const d2 = new Date(cleanDate);
+        formattedDate = !isNaN(d2.getTime()) ? d2.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+      }
+    } catch (e) {
+      formattedDate = new Date().toISOString().split('T')[0];
+    }
+    setValue('date', formattedDate);
     setSubmitError(null);
     setIsModalOpen(true);
   };
@@ -340,12 +354,8 @@ export const Expenses: React.FC = () => {
                         <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-[10px] font-bold text-brand-700 dark:bg-brand-500/10 dark:text-brand-400 uppercase tracking-wider">
                           {expense.category}
                         </span>
-                        <span className="text-[10px] text-gray-400 font-semibold">
-                          {new Date(expense.date).toLocaleDateString(undefined, {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}
+                        <span className="text-[10px] text-gray-405 font-semibold">
+                          {safeFormatDate(expense.date)}
                         </span>
                       </div>
 

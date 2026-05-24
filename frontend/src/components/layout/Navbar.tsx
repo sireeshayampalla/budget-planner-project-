@@ -16,6 +16,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { safeStorage } from '../../utils/safeStorage';
 
 interface NavbarProps {
   onToggleSidebar: () => void;
@@ -42,7 +43,7 @@ export const renderAvatar = (avatarKey?: string) => {
 
 export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const { user, logout, updatePreferences } = useAuthStore();
-  const currentTheme = user?.theme || localStorage.getItem('budget_planner_theme') || 'dark';
+  const currentTheme = user?.theme || safeStorage.getItem('budget_planner_theme') || 'dark';
   const isDark = currentTheme === 'dark';
 
   const toggleTheme = async () => {
@@ -50,7 +51,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
     if (user) {
       await updatePreferences({ theme: nextTheme });
     } else {
-      localStorage.setItem('budget_planner_theme', nextTheme);
+      safeStorage.setItem('budget_planner_theme', nextTheme);
       if (nextTheme === 'dark') {
         document.documentElement.classList.add('dark');
       } else {

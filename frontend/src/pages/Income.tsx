@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { formatCurrency } from '../utils/formatCurrency';
+import { safeFormatDate } from '../utils/formatDate';
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
   INR: '₹',
@@ -117,7 +118,20 @@ export const Income: React.FC = () => {
     setValue('amount', income.amount.toString());
     setValue('source', income.source);
     setValue('description', income.description || '');
-    setValue('date', new Date(income.date).toISOString().split('T')[0]);
+    let formattedDate = '';
+    try {
+      const d = new Date(income.date);
+      if (!isNaN(d.getTime())) {
+        formattedDate = d.toISOString().split('T')[0];
+      } else {
+        const cleanDate = String(income.date).replace(/-/g, '/').replace('T', ' ').split('.')[0];
+        const d2 = new Date(cleanDate);
+        formattedDate = !isNaN(d2.getTime()) ? d2.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+      }
+    } catch (e) {
+      formattedDate = new Date().toISOString().split('T')[0];
+    }
+    setValue('date', formattedDate);
     setSubmitError(null);
     setIsModalOpen(true);
   };
@@ -286,11 +300,7 @@ export const Income: React.FC = () => {
                           {income.source}
                         </span>
                         <span className="text-[10px] text-gray-400 font-semibold">
-                          {new Date(income.date).toLocaleDateString(undefined, {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}
+                          {safeFormatDate(income.date)}
                         </span>
                       </div>
 
