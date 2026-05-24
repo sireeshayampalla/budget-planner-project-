@@ -21,7 +21,19 @@ const app = express();
 // Security Middlewares
 app.use(helmet());
 app.use(cors({
-  origin: env.CLIENT_URL === '*' ? '*' : env.CLIENT_URL.split(','),
+  origin: (origin, callback) => {
+    // Dynamically echo the origin if CLIENT_URL is wildcard '*' or not set, supporting credentials: true
+    if (env.CLIENT_URL === '*' || !env.CLIENT_URL) {
+      callback(null, true);
+    } else {
+      const allowedOrigins = env.CLIENT_URL.split(',').map(o => o.trim());
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
