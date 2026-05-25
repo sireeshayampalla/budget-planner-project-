@@ -34,7 +34,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed inset-y-0 left-0 z-45 flex w-64 flex-col border-r border-gray-150 bg-white dark:border-darkborder dark:bg-darkcard transition-transform duration-300 md:sticky md:top-16 md:z-30 md:h-[calc(100vh-4rem)]
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-gray-150 bg-white dark:border-darkborder dark:bg-darkcard transition-transform duration-300 md:sticky md:top-16 md:z-30 md:h-[calc(100vh-4rem)]
           ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
       >
